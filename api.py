@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from lib.getdiem import TraCuuDiemThi
+from core.getdiem import TraCuuDiemThi
 
 app = FastAPI()
 
