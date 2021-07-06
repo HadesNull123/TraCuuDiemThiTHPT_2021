@@ -29,6 +29,7 @@ class TraCuuDiemThi:
     def __init__(self, year, sbd):
         self.__year = year
         self.__sbd = sbd
+        self.result = None
 
     def diem_thi_vietnamnet(self):
         """
@@ -49,7 +50,8 @@ class TraCuuDiemThi:
                 response.update({
                     str(df_list[1].iloc[ind, 0]): score
                 })
-            return response
+            self.result = response
+            return True
         except Exception as ex:
             return False
 
@@ -76,7 +78,8 @@ class TraCuuDiemThi:
                     list_score.append(str(score))
 
             response = dict(zip(list_subjects, list_score))
-            return response
+            self.result = response
+            return True
 
         except Exception as ex:
             print(ex)
@@ -116,7 +119,8 @@ class TraCuuDiemThi:
                 else:
                     list_score.append(str(score.text))
             response = dict(zip(list_subjects, list_score[6:]))
-            return response
+            self.result = response
+            return True
         except Exception as ex:
             print(ex)
             return False
@@ -145,7 +149,8 @@ class TraCuuDiemThi:
             response = dict(zip(list_subjects[2:], list_score[2:]))
             response.pop("Trung bình", None)
             response.pop("Trung bình.1", None)
-            return response
+            self.result = response
+            return True
 
         except Exception as ex:
             print(ex)
