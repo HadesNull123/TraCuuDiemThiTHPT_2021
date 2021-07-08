@@ -42,15 +42,15 @@ class TraCuuDiemThi:
             raw_html = requests.get(url=url, headers=headers)
             df_list = pd.read_html(raw_html.text, encoding="utf-8")
             index = df_list[1].index
-            response = {}
+            list_score = []
             for ind in range(0, len(index)):
                 score = str(df_list[1].iloc[ind, 1])
                 if score == "nan":
                     score = "Không tìm thấy"
-                response.update({
-                    str(df_list[1].iloc[ind, 0]): score
-                })
-            self.result = response
+                list_score.append({str(df_list[1].iloc[ind, 0]): score})
+            self.result = {
+                str(self.__sbd): list_score
+            }
             return True
         except Exception as ex:
             return False
@@ -64,6 +64,7 @@ class TraCuuDiemThi:
             headers = requests.utils.default_headers()
             headers.update({"User-Agent": list_user_agent_pc[int(random.randint(1, 10))]})
             raw_html = requests.get(url=url, headers=headers)
+            print(raw_html.text)
             df_list = pd.read_html(raw_html.text, header=1)
 
             list_subjects = []
@@ -77,8 +78,9 @@ class TraCuuDiemThi:
                 else:
                     list_score.append(str(score))
 
-            response = dict(zip(list_subjects, list_score))
-            self.result = response
+            self.result = {
+                str(self.__sbd): list(zip(list_subjects, list_score))
+            }
             return True
 
         except Exception as ex:
@@ -107,22 +109,23 @@ class TraCuuDiemThi:
                 'Cookie': ".ASPXANONYMOUS=tYDLirsWThgnfg194a3vmVN4W5cY5hbC-GZLophHiCQgo3NLCgITNSn5LbYUNSC1kZcE \
                           nZ94sd1Ot8_7JCpdEpYYhB1dsVEO7pDYt7hqPZXTtkELP1rJAnNs_l9WAzg-Jc5lAtMt0-ibq8wQVPO0Vg2"
             }
-
             raw_html = requests.get(url=url, headers=headers)
-
             soup = BeautifulSoup(raw_html.text, features="lxml")
-
             all_td = soup.find_all("td")
             for score in all_td:
                 if score.text == "":
                     list_score.append("Không tìm thấy")
                 else:
                     list_score.append(str(score.text))
-            response = dict(zip(list_subjects, list_score[6:]))
-            self.result = response
+            list_res = []
+            dict_score = dict(zip(list_subjects, list_score[6:]))
+            for key, value in dict_score.items():
+                list_res.append({key: value})
+            self.result = {
+                str(self.__sbd): list_res
+            }
             return True
         except Exception as ex:
-            print(ex)
             return False
 
     def diem_thi_24h(self):
@@ -149,7 +152,14 @@ class TraCuuDiemThi:
             response = dict(zip(list_subjects[2:], list_score[2:]))
             response.pop("Trung bình", None)
             response.pop("Trung bình.1", None)
-            self.result = response
+            list_score = []
+            for key in response:
+                list_score.append({
+                    key: str(response[key])
+                })
+            self.result = {
+                str(self.__sbd): list_score
+            }
             return True
 
         except Exception as ex:
@@ -160,6 +170,9 @@ class TraCuuDiemThi:
 if __name__ == '__main__':
     tracuu = TraCuuDiemThi(year="2020", sbd="63001581")
     print(tracuu.diem_thi_thptquocgia())
-    print(tracuu.diem_thi_vietnamnet())
-    print(tracuu.diem_thi_thanhnien())
-    print(tracuu.diem_thi_24h())
+    # print(tracuu.diem_thi_vietnamnet())
+
+    # print(tracuu.diem_thi_thanhnien())
+    # print(tracuu.diem_thi_24h())
+
+    print(tracuu.result)
